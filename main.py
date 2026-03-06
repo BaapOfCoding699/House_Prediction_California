@@ -14,15 +14,28 @@ def run_experiment():
         preds = model.predict(X_test)
         score = r2_score(y_test,model.predict(X_test))
         print(f"{name} -> R2 score : {score:.4f}")
-        plt.figure(figsize=(10,6))
-        plt.scatter(y_test,preds,alpha=0.3,color='blue')
-        plt.plot([y_test.min(),y_test.max()],[y_test.min(),y_test.max()],'r--',lw=2)
-        plt.title(f"{name} (R2: {score:.4f})")
-        plt.xlabel("Actual Price")
-        plt.ylabel("Predicted Price")
-        filename = f"{name.replace(' ','_')}_plot.png"
-        plt.savefig(filename)
-        plt.show()
+        # plt.figure(figsize=(10,6))
+        # plt.scatter(y_test,preds,alpha=0.3,color='blue')
+        # plt.plot([y_test.min(),y_test.max()],[y_test.min(),y_test.max()],'r--',lw=2)
+        # plt.title(f"{name} (R2: {score:.4f})")
+        # plt.xlabel("Actual Price")
+        # plt.ylabel("Predicted Price")
+        # filename = f"{name.replace(' ','_')}_plot.png"
+        # plt.savefig(filename)
+        # plt.show()
+
+        import pickle
+        import os
+
+        if name == "XGBoost Power":
+            if not os.path.exists("Notebooks"):
+                os.makedirs("Notebooks")
+            with open("Notebooks/california_model.pkl","wb") as f:
+                pickle.dump(model,f)
+            print("Phase1 Complete : Model saved in Notebooks.")
+
+
+
 
 
 if __name__ == "__main__":
