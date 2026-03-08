@@ -2,6 +2,21 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
+from fpdf import FPDF
+
+def create_pdf(price,inputs):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial","B",16)
+    pdf.cell(200,10,txt="california House Price Estimate",ln = True,align = 'C')
+    pdf.set_font("Arial",size = 12)
+    pdf.ln(10)
+    pdf.cell(200,10,txt = f"Estimated Market Value : ${price:,.2f}",ln = True)
+    pdf.ln(5)
+    pdf.cell(200,10,txt = "Property Details Analyzed : ",ln = True)
+    for key , value in inputs.items():
+        pdf.cell(200,10,txt = f" -{key}:{value}",ln = True)
+    return pdf.output(dest = 'S').encode('latin-1')
 
 @st.cache_resource
 def load_assets():
@@ -61,3 +76,18 @@ try:
     st.map(map_data,zoom = 10)
 except Exception as e:
     st.error(f"Error making prediction: {e}")
+
+st.divider()
+st.subheader("Export Results")
+details = {
+    "Median Income" : f"{income} ($10k units)",
+    "House Age" : f"{age} years",
+    "Location" : f"{latitude} , {longitude}"
+}
+pdf_bytes = create_pdf(final_price,details)
+st.download_button(
+    label = "Download Estimate Report (PDF)",
+    data = pdf_bytes,
+    file_name = "House_Estimate.pdf",
+    mime  = "application/pdf"
+)
